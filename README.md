@@ -4,7 +4,7 @@ Libraries used:
 - Pandas for data transformation 
 - Umap (https://umap-learn.readthedocs.io/) and Hdbscan (https://hdbscan.readthedocs.io/) for unsupervised learning
 - Plotnine (https://plotnine.readthedocs.io/) for vizualization
-- Pycausalimpact for analysis and modeling
+- Pycausalimpact for analysis and modeling (https://pypi.org/project/pycausalimpact/)
 
 The motivation for this project is to determine whether automobile crashes changed during the general lockdown following COVID19 in the US.  
 
