@@ -2,13 +2,11 @@
 import numpy as np
 import datetime as dt
 import pandas as pd
-import umap.umap_ as umap
-import hdbscan
 
 # define class
 class etl():
-    def __init__(self, date_interval=[(2019,3,20),(2020,12,31)], home_dir='/home/gopherguy14/datasets'):
-        self.dt_inter = date_interval
+    def __init__(self, date_interval=['2019-03-20', '2020-12-31'], home_dir='/home/gopherguy14/datasets'):
+        self.date_interval = [dt.datetime.strptime(d, '%Y-%m-%d') for d in date_interval] 
         self.home_dir = home_dir
 
     def load_crash_data(self):
@@ -17,7 +15,7 @@ class etl():
         # filter
         self.crashes_df['Start_Time'] = self.crashes_df.Start_Time.astype('datetime64[ns]')
         self.crashes_df['Start_Date'] = self.crashes_df.Start_Time.dt.date
-        self.crashes_df = self.crashes_df[ (self.crashes_df['Start_Date'] >= dt.date(self.dt_inter[0])) & (self.crashes_df['Start_Date'] < dt.date(self.dt_inter[1])) ] 
+        self.crashes_df = self.crashes_df[ (self.crashes_df['Start_Time'] >= self.date_interval[0]) & (self.crashes_df['Start_Time'] < self.date_interval[1]) ] 
         # drop duplicate ids
         self.crashes_df = self.crashes_df.drop_duplicates(subset='ID')
     
@@ -33,9 +31,13 @@ class etl():
         # drop duplicates just in case
         self.pop_df = pop_df.drop_duplicates()
 
+    def load_covid(self):
+
+
     def pivot_data(self, index_list, target_col, date_interval=['2019-03-01','2020-06-30']):
         # optional subset, I guess
-        self.crashes_df = self.crashes_df[ (self.crashes_df['Start_Date'] >= dt.date(date_interval[0])) & (self.crashes_df['Start_Date'] < dt.date(date_interval[1])) ] 
+        date_interval = [dt.datetime.strptime(d, '%Y-%m-%d') for d in date_interval] 
+        self.crashes_df = self.crashes_df[ (self.crashes_df['Start_Time'] >= date_interval[0]) & (self.crashes_df['Start_Time'] < date_interval[1]) ] 
         # aggregate
         self.data_cluster = self.data_cluster.groupby(index_list + target_col).agg({'ID':'count'})
         # pivot
@@ -45,6 +47,19 @@ class etl():
         # fill missing with 0
         self.data_cluster = self.data_cluster.fillna(0)
 
+    def cluster_data(self, ):
+        
+    def plot_embedding(self, ):
+
+    def write_cluster(self, ):
+
+    def join_pop(self, ):
+
+    def join_covid(self, ):
+
+    def create_features(self, ):
+
+    def write_database(self, ):
 
 # to allow things to import
 if __name__ == '__main__':
