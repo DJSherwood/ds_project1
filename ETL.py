@@ -5,8 +5,9 @@ import pandas as pd
 import umap.umap_ as umap
 import hdbscan
 
+# define class
 class etl():
-    def __init__(self,date_interval=['2019-03-01','2020-01-01'], home_dir='/home/gopherguy14/datasets'):
+    def __init__(self, date_interval=[(2019,3,20),(2020,12,31)], home_dir='/home/gopherguy14/datasets'):
         self.dt_inter = date_interval
         self.home_dir = home_dir
 
@@ -16,7 +17,7 @@ class etl():
         # filter
         self.crashes_df['Start_Time'] = self.crashes_df.Start_Time.astype('datetime64[ns]')
         self.crashes_df['Start_Date'] = self.crashes_df.Start_Time.dt.date
-        self.crashes_df = self.crashes_df[ (self.crashes_df['Start_Time'] >= self.dt_inter[0]) & (self.crashes_df['Start_Time'] < self.dt_inter[1]) ] 
+        self.crashes_df = self.crashes_df[ (self.crashes_df['Start_Date'] >= dt.date(self.dt_inter[0])) & (self.crashes_df['Start_Date'] < dt.date(self.dt_inter[1])) ] 
         # drop duplicate ids
         self.crashes_df = self.crashes_df.drop_duplicates(subset='ID')
     
@@ -31,6 +32,19 @@ class etl():
         self.pop_df = pop_df.drop(columns=['County Name', 'countyFIPS'])
         # drop duplicates just in case
         self.pop_df = pop_df.drop_duplicates()
+
+    def pivot_data(self, index_list, target_col, date_interval=['2019-03-01','2020-06-30']):
+        # optional subset, I guess
+        self.crashes_df = self.crashes_df[ (self.crashes_df['Start_Date'] >= dt.date(date_interval[0])) & (self.crashes_df['Start_Date'] < dt.date(date_interval[1])) ] 
+        # aggregate
+        self.data_cluster = self.data_cluster.groupby(index_list + target_col).agg({'ID':'count'})
+        # pivot
+        self.data_cluster = self.data_cluster.pivot(index=index_list, columns=target_col, values='ID')
+        # reset index
+        self.data_cluster = self.data_cluster.reset_index()
+        # fill missing with 0
+        self.data_cluster = self.data_cluster.fillna(0)
+
 
 # to allow things to import
 if __name__ == '__main__':
